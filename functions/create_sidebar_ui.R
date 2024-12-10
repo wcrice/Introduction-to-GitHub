@@ -24,6 +24,11 @@ create_sidebar_ui <- function() {
     hr(),
     h4("Ready to Start?"),
     p("Use the navigation tabs to explore different dataset modules and practice enhancing them!"),
-    actionButton("get_started", "Get Started!", icon = icon("rocket"))
+    tags$a(
+      href = "https://github.com/wcrice/Introduction-to-GitHub/blob/main/README.md",  # Replace with your GitHub repo link
+      target = "_blank",  # Opens in a new tab
+      class = "btn btn-primary",
+      icon("rocket"), " Get Started!"
+    )
   )
 }

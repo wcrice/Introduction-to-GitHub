@@ -1,10 +1,12 @@
 library(dplyr)
 library(purrr)
+library(here)
 
 # Diagnostics for sourcing functions
 cat("Diagnostics: Checking 'functions' directory...\n")
-if (dir.exists("functions")) {
-  function_files <- list.files("functions", full.names = TRUE, pattern = "\\.R$")
+functions_dir <- here("functions")
+if (dir.exists(functions_dir)) {
+  function_files <- list.files(functions_dir, full.names = TRUE, pattern = "\\.R$")
   cat("Diagnostics: Found", length(function_files), "function files in 'functions' directory.\n")
   if (length(function_files) > 0) {
     cat("Diagnostics: Sourcing function files...\n")
@@ -23,8 +25,9 @@ if (dir.exists("functions")) {
 
 # Diagnostics for sourcing modules
 cat("Diagnostics: Checking 'modules' directory...\n")
-if (dir.exists("modules")) {
-  module_files <- list.files("modules", full.names = TRUE, pattern = "\\.R$")
+modules_dir <- here("modules")
+if (dir.exists(modules_dir)) {
+  module_files <- list.files(modules_dir, full.names = TRUE, pattern = "\\.R$")
   cat("Diagnostics: Found", length(module_files), "module files in 'modules' directory.\n")
   
   if (length(module_files) > 0) {
@@ -55,18 +58,20 @@ if (dir.exists("modules")) {
 }
 
 # Diagnostics for sourcing ui.R
+ui_file <- here("ui.R")
 cat("Diagnostics: Sourcing 'ui.R'...\n")
 tryCatch({
-  source("ui.R")
+  source(ui_file)
   cat("Diagnostics: Successfully sourced 'ui.R'.\n")
 }, error = function(e) {
   cat("Error: Failed to source 'ui.R' -", e$message, "\n")
 })
 
 # Diagnostics for sourcing server.R
+server_file <- here("server.R")
 cat("Diagnostics: Sourcing 'server.R'...\n")
 tryCatch({
-  source("server.R")
+  source(server_file)
   cat("Diagnostics: Successfully sourced 'server.R'.\n")
 }, error = function(e) {
   cat("Error: Failed to source 'server.R' -", e$message, "\n")

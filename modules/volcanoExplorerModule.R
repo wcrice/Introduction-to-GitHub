@@ -3,21 +3,40 @@ volcanoExplorerModuleUI <- function(id) {
   ns <- NS(id)
   tagList(
     h3("Explore the Volcano Dataset"),
-    sidebarPanel(
-      h4("Visualization Options"),
-      checkboxInput(ns("show_contour"), "Show Contour Lines", value = TRUE),
-      selectInput(
-        ns("color_palette"),
-        "Choose Color Gradient:",
-        choices = list("Terrain" = "terrain", "Viridis" = "viridis", "Heat" = "heat"),
-        selected = "terrain"
+    fluidPage(
+      # Full-width "Choose Color Gradient" input
+      fluidRow(
+        column(
+          width = 12,
+          selectInput(
+            ns("color_palette"),
+            "Choose Color Gradient:",
+            choices = list("Terrain" = "terrain", "Viridis" = "viridis", "Heat" = "heat"),
+            selected = "terrain"
+          )
+        )
+      ),
+      # Checkbox input in a new row
+      fluidRow(
+        column(
+          width = 12,
+          checkboxInput(ns("show_contour"), "Show Contour Lines", value = TRUE)
+        )
+      ),
+      # Full-width plot output
+      fluidRow(
+        column(
+          width = 12,
+          tags$div(
+            style = "width: 100%;",
+            plotOutput(ns("volcano_plot"))
+          )
+        )
       )
-    ),
-    mainPanel(
-      plotOutput(ns("volcano_plot"))
     )
   )
 }
+
 
 # Module Server
 volcanoExplorerModuleServer <- function(id, session) {
