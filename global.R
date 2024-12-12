@@ -1,7 +1,10 @@
+library(dplyr)
+library(purrr)
+library(fst)
 
 # Diagnostics for sourcing functions
 cat("Diagnostics: Checking 'functions' directory...\n")
-functions_dir <- here("functions")
+functions_dir <- "functions"
 cat("Function directory:", functions_dir, "\n")
 
 if (dir.exists(functions_dir)) {
@@ -28,7 +31,7 @@ if (dir.exists(functions_dir)) {
 
 # Diagnostics for sourcing modules
 cat("Diagnostics: Checking 'modules' directory...\n")
-modules_dir <- here("modules")
+modules_dir <- "modules"
 cat("Modules directory:", modules_dir, "\n")
 
 if (dir.exists(modules_dir)) {

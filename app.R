@@ -1,9 +1,5 @@
-library(dplyr)
-library(purrr)
-library(here)
-
 # Global for sourcing global.R
-ui_file <- here("global.R")
+ui_file <- "global.R"
 cat("Global: Sourcing 'global.R'...\n")
 tryCatch({
   source(ui_file)
@@ -13,7 +9,7 @@ tryCatch({
 })
 
 # Diagnostics for sourcing ui.R
-ui_file <- here("ui.R")
+ui_file <- "ui.R"
 cat("Diagnostics: Sourcing 'ui.R'...\n")
 tryCatch({
   source(ui_file)
@@ -23,7 +19,7 @@ tryCatch({
 })
 
 # Diagnostics for sourcing server.R
-server_file <- here("server.R")
+server_file <- "server.R"
 cat("Diagnostics: Sourcing 'server.R'...\n")
 tryCatch({
   source(server_file)
