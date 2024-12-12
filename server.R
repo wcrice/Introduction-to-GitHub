@@ -40,7 +40,7 @@ server <- function(input, output, session) {
     )
     
     # Call the module's server function
-    do.call(get(module_server_fn), list(module_name, session))
+    do.call(get(module_server_fn), list(id = module_name))
     } else {
     cat("UI or Server function missing for module: ", module_name, "\n")
     }
