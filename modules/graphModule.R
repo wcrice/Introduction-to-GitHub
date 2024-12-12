@@ -81,6 +81,7 @@ graphModuleServer <- function(id) {
 
     # Update Site ID dropdown based on selected Basin
     observeEvent(input$basin_filter, {
+      cat("Selected Basin:", input$basin_filter, "\n")
       sites <- loggernet_summary %>%
         filter(basin == input$basin_filter) %>%
         pull(Site_ID) %>%
@@ -91,12 +92,28 @@ graphModuleServer <- function(id) {
 
     # Update Year dropdown based on selected Site ID
     observeEvent(input$site_filter, {
+      cat("Selected Site ID:", input$site_filter, "\n")
       years <- loggernet %>%
         filter(Site_ID == input$site_filter) %>%
         pull(WaterYear) %>%
         unique() %>%
         sort()
       updateSelectizeInput(session, "year_filter", choices = years, selected = years)
+    })
+
+    # Observe year filter changes
+    observeEvent(input$year_filter, {
+      cat("Selected Year(s):", paste(input$year_filter, collapse = ", "), "\n")
+    })
+
+    # Observe radio button changes
+    observeEvent(input$time_selection, {
+      cat("Selected Time Field:", input$time_selection, "\n")
+    })
+
+    # Observe checkbox changes
+    observeEvent(input$edit_last_row, {
+      cat("Edit Last Row Mode:", input$edit_last_row, "\n")
     })
 
     # Reactive filtered dataset
