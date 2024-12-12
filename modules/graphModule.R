@@ -19,11 +19,13 @@ graphModuleUI <- function(id) {
         )
       ),
       column(4,
-        checkboxGroupInput(
+        selectizeInput(
           ns("year_filter"),
           "Select Year(s):",
           choices = NULL,
-          selected = NULL
+          selected = NULL,
+          multiple = TRUE,
+          options = list(plugins = list('remove_button', 'drag_drop'))
         )
       )
     ),
@@ -31,7 +33,7 @@ graphModuleUI <- function(id) {
       column(12,
         tabsetPanel(
           tabPanel("DTW Comparison Plot",
-            plotly::plotlyOutput(ns("dtw_plot"), height = "600px")
+            plotly::plotlyOutput(ns("dtw_plot"), height = "400px")
           )
         )
       )
@@ -61,14 +63,14 @@ graphModuleServer <- function(id) {
       updateSelectInput(session, "site_filter", choices = sites, selected = sites[1])
     })
 
-    # Update Year checkboxes based on selected Site ID
+    # Update Year dropdown based on selected Site ID
     observeEvent(input$site_filter, {
       years <- loggernet %>%
         filter(Site_ID == input$site_filter) %>%
         pull(WaterYear) %>%
         unique() %>%
         sort()
-      updateCheckboxGroupInput(session, "year_filter", choices = years, selected = years)
+      updateSelectizeInput(session, "year_filter", choices = years, selected = years)
     })
 
     # Reactive filtered dataset
@@ -79,7 +81,7 @@ graphModuleServer <- function(id) {
         filter(Site_ID == input$site_filter, WaterYear %in% input$year_filter)
 
       # Check if required columns are present, and handle missing columns
-      if (!"dtw_ft_manual" %in% colnames(loggernet_filtered)) {
+      if (!"DepthToWater_MeasurementPoint_ft" %in% colnames(loggernet_filtered)) {
         loggernet_filtered$dtw_ft_manual <- NA
       }
 
@@ -95,18 +97,20 @@ graphModuleServer <- function(id) {
         x = ~TIMESTAMP, 
         y = ~dtw_ft, 
         type = "scatter", 
-        mode = "lines", 
+        mode = "lines+markers", 
         name = "Auto DTW", 
         line = list(color = "blue")
       ) %>%
-        add_trace(
-          y = ~dtw_ft_manual, 
-          mode = "lines", 
-          name = "Manual DTW", 
-          line = list(color = "green", dash = "dash")
+        add_markers(
+          data = df,
+          y = ~DepthToWater_MeasurementPoint_ft,
+          mode = "markers", 
+          name = "Measured DTW", 
+          marker = list(symbol = "triangle-up", color = "red", size = 8)
         ) %>%
         layout(
           title = "DTW Comparison Plot",
+          yaxis = list(title = "DTW (ft)", autorange = "reversed"),
           xaxis = list(title = "Timestamp"),
           yaxis = list(title = "DTW (ft)"),
           autosize = TRUE
