@@ -54,8 +54,10 @@ graphModuleUI <- function(id) {
     ),
     fluidRow(
       column(12,
+             checkboxInput(ns("edit_last_row"), "Edit last row instead of adding new", value = FALSE),
              h4("Selected Points for QAQC"),
-             DT::dataTableOutput(ns("qaqc_table"))
+             DT::dataTableOutput(ns("qaqc_table")),
+             downloadButton(ns("download_qaqc"), "Download QAQC CSV")
       )
     )
   )
@@ -128,7 +130,8 @@ graphModuleServer <- function(id) {
           autosize = TRUE
         )
 
-      plot <- plotly::event_register(plot, "plotly_click")
+      # Registering the plotly_click event
+      plotly::event_register(plot, "plotly_click")
       plot
     })
 
@@ -137,17 +140,26 @@ graphModuleServer <- function(id) {
       click <- event_data("plotly_click")
       req(click)
 
-      # Add a new row to the reactive data frame based on time selection
-      new_row <- data.frame(
-        Site_ID = input$site_filter,
-        time_start = if (input$time_selection == "time_start") as.character(click$x) else NA,
-        time_end = if (input$time_selection == "time_end") as.character(click$x) else NA,
-        variable = NA, # To be filled by the user
-        Notes = "", # To be filled by the user
-        stringsAsFactors = FALSE
-      )
+      timestamp <- as.POSIXct(click$x, origin = "1970-01-01", tz = "UTC")
+      formatted_time <- format(timestamp, "%Y-%m-%d %H:%M:%S")
 
-      selected_points$data <- rbind(selected_points$data, new_row)
+      if (input$edit_last_row && nrow(selected_points$data) > 0) {
+        # Edit the last row of the reactive data frame
+        selected_points$data[nrow(selected_points$data), "time_start"] <- if (input$time_selection == "time_start") formatted_time else selected_points$data[nrow(selected_points$data), "time_start"]
+        selected_points$data[nrow(selected_points$data), "time_end"] <- if (input$time_selection == "time_end") formatted_time else selected_points$data[nrow(selected_points$data), "time_end"]
+      } else {
+        # Add a new row to the reactive data frame based on time selection
+        new_row <- data.frame(
+          Site_ID = input$site_filter,
+          time_start = if (input$time_selection == "time_start") formatted_time else NA,
+          time_end = if (input$time_selection == "time_end") formatted_time else NA,
+          variable = NA, # To be filled by the user
+          Notes = "", # To be filled by the user
+          stringsAsFactors = FALSE
+        )
+
+        selected_points$data <- rbind(selected_points$data, new_row)
+      }
 
       # Save the updated table to CSV
       write.csv(selected_points$data, file = "qaqc_delete.csv", row.names = FALSE)
@@ -165,7 +177,19 @@ graphModuleServer <- function(id) {
     # Render QAQC Table
     output$qaqc_table <- DT::renderDataTable({
       req(selected_points$data)
-      DT::datatable(selected_points$data, options = list(pageLength = 5, scrollX = TRUE))
+      selected_points$data %>%
+        arrange(desc(row_number())) %>%
+        DT::datatable(options = list(pageLength = 5, scrollX = TRUE))
     })
+
+    # Download QAQC CSV
+    output$download_qaqc <- downloadHandler(
+      filename = function() {
+        paste("qaqc_data", Sys.Date(), ".csv", sep = "")
+      },
+      content = function(file) {
+        write.csv(selected_points$data, file, row.names = FALSE)
+      }
+    )
   })
 }
