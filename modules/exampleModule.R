@@ -1,8 +1,10 @@
 exampleModuleUI <- function(id) {
   ns <- NS(id)
   tagList(
-    h3("Example Module"),
-    textOutput(ns("example_text"))
+    lcarsBox(
+      title = "Example Module",
+      p(ns("example_text"))
+    )
   )
 }
 

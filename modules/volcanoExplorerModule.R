@@ -1,35 +1,30 @@
-# Module UI
+# Module UI with LCARS
 volcanoExplorerModuleUI <- function(id) {
   ns <- NS(id)
   tagList(
-    h3("Explore the Volcano Dataset"),
-    fluidPage(
-      # Full-width "Choose Color Gradient" input
+    lcarsBox(
+      title = "Explore the Volcano Dataset",
       fluidRow(
         column(
           width = 12,
-          selectInput(
-            ns("color_palette"),
-            "Choose Color Gradient:",
-            choices = list("Terrain" = "terrain", "Viridis" = "viridis", "Heat" = "heat"),
-            selected = "terrain"
+          lcarsBox(
+            title = "Visualization Controls",
+            selectInput(
+              ns("color_palette"),
+              "Choose Color Gradient:",
+              choices = list("Terrain" = "terrain", "Viridis" = "viridis", "Heat" = "heat"),
+              selected = "terrain"
+            ),
+            lcarsCheckbox(ns("show_contour"), "Show Contour Lines", value = TRUE)
           )
         )
       ),
-      # Checkbox input in a new row
       fluidRow(
         column(
           width = 12,
-          checkboxInput(ns("show_contour"), "Show Contour Lines", value = TRUE)
-        )
-      ),
-      # Full-width plot output
-      fluidRow(
-        column(
-          width = 12,
-          tags$div(
-            style = "width: 100%;",
-            plotOutput(ns("volcano_plot"))
+          lcarsBox(
+            title = "Volcano Plot",
+            plotOutput(ns("volcano_plot"))  # ✅ Replaced `lcarsPlotOutput()` with `plotOutput()`
           )
         )
       )
@@ -37,8 +32,7 @@ volcanoExplorerModuleUI <- function(id) {
   )
 }
 
-
-# Module Server
+# Module Server with LCARS
 volcanoExplorerModuleServer <- function(id, session) {
   moduleServer(id, function(input, output, session) {
     # Reactive palette function
@@ -55,7 +49,7 @@ volcanoExplorerModuleServer <- function(id, session) {
           }
         },
         heat = heat.colors,
-        terrain.colors  # Default in case of invalid input
+        terrain.colors  # Default fallback
       )
     })
     
