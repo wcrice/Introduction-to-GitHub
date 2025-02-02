@@ -1,17 +1,19 @@
-# Define UI
 ui <- lcarsPage(
   lcarsHeader("Dynamic LCARS Shiny App"),
   
   fluidRow(
-    # Sidebar: Dynamically Generated Buttons (Vertically Stacked)
+    # Left Panel: Navigation Panel (Takes 90% of Vertical Space)
     column(
       width = 3,
-      lcarsBox(
-        title = "Modules",
-        left_inputs = inputColumn(  # ✅ Correct LCARS layout for vertical buttons
-          uiOutput("dynamic_sidebar")  # ✅ Dynamically generated buttons appear here
-        ),
-        width_left = 200  # ✅ Ensure proper width for LCARS sidebar
+      div(style = "height: 90vh; display: flex; flex-direction: column;",
+          lcarsBox(
+            title = "Navigation",
+            left_inputs = inputColumn(  # ✅ Correct LCARS layout for vertical buttons
+              uiOutput("dynamic_sidebar"),  # ✅ Dynamically generated buttons appear here
+              uiOutput("navigation_controls")  # ✅ Module-specific navigation controls appear here
+            ),
+            width_left = 200  # ✅ Ensure proper width for LCARS sidebar
+          )
       )
     ),
     

@@ -1,4 +1,3 @@
-# Define Server
 server <- function(input, output, session) {
   
   # Generate dynamic navigation buttons for modules
