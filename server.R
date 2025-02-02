@@ -43,7 +43,23 @@ server <- function(input, output, session) {
     }
   })
   
-  # Render Selected Module's UI
+  # Render Selected Module's Navigation Panel UI
+  output$navigation_controls <- renderUI({
+    req(selected_module())
+    
+    print(paste("Attempting to load Navigation for module:", selected_module()))  # ✅ Debugging
+    
+    module_nav_fn <- paste0(selected_module(), "Nav")
+    if (exists(module_nav_fn)) {
+      print(paste("Found function:", module_nav_fn))  # ✅ Debugging
+      return(lcarsBox(do.call(get(module_nav_fn), list(selected_module()))))
+    } else {
+      print("Module navigation function does not exist!")
+      return(NULL)
+    }
+  })
+  
+  # Render Selected Module's Main Panel UI
   output$dynamic_content <- renderUI({
     req(selected_module())
     
