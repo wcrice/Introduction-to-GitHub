@@ -1,26 +1,26 @@
-# UI with LCARS
+# Define UI
 ui <- lcarsPage(
   lcarsHeader("Dynamic LCARS Shiny App"),
   
   fluidRow(
+    # Sidebar: Dynamically Generated Buttons (Vertically Stacked)
     column(
       width = 3,
       lcarsBox(
-        title = "Controls",
-        uiOutput("dynamic_sidebar")  # ✅ Already correctly replaced with `uiOutput()`
+        title = "Modules",
+        left_inputs = inputColumn(  # ✅ Correct LCARS layout for vertical buttons
+          uiOutput("dynamic_sidebar")  # ✅ Dynamically generated buttons appear here
+        ),
+        width_left = 200  # ✅ Ensure proper width for LCARS sidebar
       )
     ),
     
+    # Main Panel: Displays Content Dynamically
     column(
       width = 9,
       lcarsBox(
         title = "Main Panel",
-        lcarsBox(  # ✅ Added `lcarsBox()` to style tabsetPanel()
-          tabsetPanel(
-            id = "dynamic_tabs",  # Dynamically generated tabs for modules
-            tabPanel("Home", h3("Welcome to the Dynamic LCARS Shiny App"))
-          )
-        )
+        uiOutput("dynamic_content")  # ✅ Module content dynamically updates here
       )
     )
   )

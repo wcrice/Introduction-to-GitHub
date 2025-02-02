@@ -1,53 +1,66 @@
-# Server
+# Define Server
 server <- function(input, output, session) {
   
-  # Generate dynamic sidebar UI (e.g., based on sourced functions)
+  # Generate dynamic navigation buttons for modules
   output$dynamic_sidebar <- renderUI({
-    if (exists("create_sidebar_ui")) {
-      create_sidebar_ui()
+    modules_dir <- "modules"
+    if (dir.exists(modules_dir)) {
+      module_files <- list.files(modules_dir, pattern = "\\.R$", full.names = TRUE)
+      module_names <- tools::file_path_sans_ext(basename(module_files))
+      
+      print("Generating module buttons...")
+      print(module_names)  # ✅ Debugging
+      
+      button_list <- lapply(module_names, function(mod) {
+        lcarsButton(inputId = paste0("nav_", mod), label = mod)
+      })
+      
+      do.call(tagList, button_list)  # ✅ Correctly stacks buttons vertically
     } else {
-      p("No dynamic sidebar UI available.", color = "atomic-tangerine")
+      print("No modules found.")
+      NULL  # ✅ No text output if no modules exist
     }
   })
   
-  # Dynamically add tabs for modules
-  modules_dir <- here("modules")
-  if (dir.exists(modules_dir)) {
-    cat("Modules directory exists: ", modules_dir, "\n")
-    module_files <- list.files(modules_dir, pattern = "\\.R$", full.names = TRUE)
-    cat("Found module files: ", module_files, "\n")
-    
-    for (module_file in module_files) {
-      module_name <- tools::file_path_sans_ext(basename(module_file))
-      cat("Processing module: ", module_name, "\n")
+  # Reactive Value to Track Selected Module
+  selected_module <- reactiveVal("Home")
+  
+  # Handle Button Clicks to Switch Content
+  observe({
+    modules_dir <- "modules"
+    if (dir.exists(modules_dir)) {
+      module_files <- list.files(modules_dir, pattern = "\\.R$", full.names = TRUE)
+      module_names <- tools::file_path_sans_ext(basename(module_files))
       
-      # Assume each module defines a `moduleNameUI` and `moduleNameServer` function
-      module_ui_fn <- paste0(module_name, "UI")
-      module_server_fn <- paste0(module_name, "Server")
-      
-      if (exists(module_ui_fn) && exists(module_server_fn)) {
-        cat("Found UI and Server functions for module: ", module_name, "\n")
-        
-        # Add a tab for the module using Shiny components inside LCARS styling
-        insertTab(
-          inputId = "dynamic_tabs",
-          tabPanel(  # ✅ Replaced lcarsTabPanel() with tabPanel()
-            title = module_name,
-            lcarsBox(  # ✅ Wrapped UI inside lcarsBox() for LCARS styling
-              do.call(get(module_ui_fn), list(module_name))
-            )
-          ),
-          target = "Home",
-          position = "after"
-        )
-        
-        # Call the module's server function
-        do.call(get(module_server_fn), list(module_name, session))
-      } else {
-        cat("UI or Server function missing for module: ", module_name, "\n")
+      for (module_name in module_names) {
+        local({  # ✅ Ensures correct event binding
+          mod <- module_name  # Capture module name in local scope
+          observeEvent(input[[paste0("nav_", mod)]], {
+            print(paste("Button clicked for:", mod))  # ✅ Debugging
+            selected_module(mod)
+          })
+        })
       }
     }
-  } else {
-    cat("Modules directory does not exist: ", modules_dir, "\n")
-  }
+  })
+  
+  # Render Selected Module's UI
+  output$dynamic_content <- renderUI({
+    req(selected_module())
+    
+    print(paste("Attempting to load UI for module:", selected_module()))  # ✅ Debugging
+    
+    if (selected_module() == "Home") {
+      return(h3("Welcome to the Dynamic LCARS Shiny App"))
+    }
+    
+    module_ui_fn <- paste0(selected_module(), "UI")
+    if (exists(module_ui_fn)) {
+      print(paste("Found function:", module_ui_fn))  # ✅ Debugging
+      return(lcarsBox(do.call(get(module_ui_fn), list(selected_module()))))
+    } else {
+      print("Module function does not exist!")
+      return(p("Module UI function not found."))
+    }
+  })
 }
