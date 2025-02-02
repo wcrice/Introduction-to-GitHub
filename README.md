@@ -12,8 +12,8 @@ This 1-hour interactive workshop focuses on using **GitHub Desktop** for collabo
 Before attending the workshop, make sure you have the following installed and configured:
 
 1. **GitHub Account:**  
-   - A GitHub account linked to your **LWA** email address.  
-   - If you don't have one, sign up at [github.com](https://github.com) using your LWA email.
+   - A GitHub account linked to your email address.  
+   - If you don't have one, sign up at [github.com](https://github.com) using your email.
 
 2. **GitHub Desktop:**  
    - Download and install GitHub Desktop: [desktop.github.com](https://desktop.github.com/).  
@@ -53,11 +53,11 @@ Before attending the workshop, make sure you have the following installed and co
 
 **Activity:**  
 - **Step-by-Step Setup:**  
-  - Open GitHub Desktop and sign in with your **LWA GitHub account**.  
+  - Open GitHub Desktop and sign in with your ** GitHub account**.  
   - Configure Git settings:  
     - **File → Options → Git:**  
-      - **Name:** Your full name (e.g., "Jane Doe")  
-      - **Email:** Your LWA email (e.g., `jane.doe@lwa.org`)  
+      - **Name:** Your full name 
+      - **Email:** Your GitHub email
 - **Quick Check:**  
   - Verify setup by confirming your profile appears in GitHub Desktop.
 
